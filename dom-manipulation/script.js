@@ -66,6 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
   populateCategories();
   filterQuotes(); // Show quotes for saved category
 
+  // Fetch from server once on page load
+  fetchQuotesFromServer();
+
+  // Optional: sync periodically every 30 seconds
+  setInterval(fetchQuotesFromServer, 30000);
   // Start syncing every 30 seconds
   setInterval(fetchQuotesFromServer, 30000);
 });
@@ -236,5 +241,39 @@ function notifyUser(message) {
   setTimeout(() => {
     document.body.removeChild(notification);
   }, 4000);
+}
+
+// Async function to fetch quotes from JSONPlaceholder
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+    const data = await response.json();
+
+    // Map post titles as quotes and assign a category
+    const serverQuotes = data.slice(0, 5).map(post => ({
+      text: post.title,
+      category: "server"
+    }));
+
+    let localQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+
+    // Merge quotes while avoiding duplicates
+    const mergedQuotes = [...localQuotes];
+    serverQuotes.forEach(serverQuote => {
+      if (!localQuotes.some(q => q.text === serverQuote.text)) {
+        mergedQuotes.push(serverQuote);
+        notifyUser("New quote synced from server.");
+      }
+    });
+
+    quotes = mergedQuotes;
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+
+    populateCategories();
+    filterQuotes();
+
+  } catch (error) {
+    console.error("Failed to fetch quotes from server:", error);
+  }
 }
 
