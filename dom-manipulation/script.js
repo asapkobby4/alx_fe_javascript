@@ -290,10 +290,37 @@ async function fetchQuotesFromServer() {
   .then(response => response.json())
   .then(data => {
     console.log("Quotes synced to server:", data);
-    // Optionally notify user in the UI
+    showNotification("Quotes synced with server!");
   })
   .catch(error => {
     console.error("Failed to sync quotes:", error);
   });
 }
+
+//show notification function
+  function showNotification(message) {
+  let notification = document.getElementById("syncNotification");
+
+  if (!notification) {
+    notification = document.createElement("div");
+    notification.id = "syncNotification";
+    notification.style.position = "fixed";
+    notification.style.bottom = "10px";
+    notification.style.right = "10px";
+    notification.style.backgroundColor = "#4caf50";
+    notification.style.color = "#fff";
+    notification.style.padding = "10px";
+    notification.style.borderRadius = "5px";
+    notification.style.boxShadow = "0 0 10px rgba(0,0,0,0.3)";
+    document.body.appendChild(notification);
+  }
+
+  notification.textContent = message;
+
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+
 
