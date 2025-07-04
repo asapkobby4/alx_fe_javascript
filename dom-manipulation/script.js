@@ -30,7 +30,15 @@ function addQuote() {
 }
 
 // Add event listener for new quote button
-document.addEventListener("DOMContentLoaded", () => {
-  const newQuoteButton = document.getElementById("newQuote");
-  newQuoteButton.addEventListener("click", showRandomQuote);
-});
+document.getElementById("newQuote").addEventListener("click", displayRandomQuote);
+
+
+//display randome quote
+function displayRandomQuote() {
+  const index = Math.floor(Math.random() * quotes.length);
+  const quote = quotes[index];
+
+  const quoteDisplay = document.getElementById("quoteDisplay");
+  quoteDisplay.innerHTML = `<p>"${quote.text}" — <em>${quote.category}</em></p>`;
+}
+
