@@ -276,4 +276,24 @@ async function fetchQuotesFromServer() {
     console.error("Failed to fetch quotes from server:", error);
   }
 }
+   //sync quotes from server 
+   function syncQuotesToServer() {
+  const quotes = JSON.parse(localStorage.getItem("quotes") || "[]");
+
+  fetch("https://jsonplaceholder.typicode.com/posts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(quotes)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log("Quotes synced to server:", data);
+    // Optionally notify user in the UI
+  })
+  .catch(error => {
+    console.error("Failed to sync quotes:", error);
+  });
+}
 
