@@ -65,6 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
   createAddQuoteForm();
   populateCategories();
   filterQuotes(); // Show quotes for saved category
+
+  // Start syncing every 30 seconds
+  setInterval(fetchQuotesFromServer, 30000);
 });
   // Optional: auto show last viewed quote
   const last = sessionStorage.getItem("lastQuote");
@@ -186,3 +189,52 @@ function populateCategories() {
   const lastSelected = localStorage.getItem("selectedCategory") || "all";
   categoryFilter.value = lastSelected;
 }
+//fetch quotes from server
+function fetchQuotesFromServer() {
+  // Simulated server data
+  const serverQuotes = [
+    { text: "Learn from yesterday, live for today, hope for tomorrow.", category: "inspiration" },
+    { text: "Simplicity is the soul of efficiency.", category: "productivity" }
+  ];
+
+  // Simulate fetching from server
+  setTimeout(() => {
+    let localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+
+    // Merge: remove duplicates
+    const mergedQuotes = [...localQuotes];
+    serverQuotes.forEach(serverQuote => {
+      if (!localQuotes.some(q => q.text === serverQuote.text)) {
+        mergedQuotes.push(serverQuote);
+        notifyUser("New quote synced from server.");
+      }
+    });
+
+    quotes = mergedQuotes;
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+
+    populateCategories();
+    filterQuotes();
+  }, 1000); // Simulate delay
+}
+
+//conflict notification function
+function notifyUser(message) {
+  const notification = document.createElement("div");
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #444;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+  `;
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    document.body.removeChild(notification);
+  }, 4000);
+}
+
